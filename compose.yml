@@ -1,0 +1,26 @@
+services:
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INIT_ADMIN_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INIT_ADMIN_PASSWORD}
+    volumes:
+      - mongo_db:/data/db
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express
+    restart: unless-stopped
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_INIT_WEB_EXPRESS_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_INIT_WEB_EXPRESS_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_INIT_ADMIN_USERNAME}:${MONGO_INIT_ADMIN_PASSWORD}@mongo:27017/
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+
+volumes:
+  mongo_db:
